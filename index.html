@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The MM Times</title>
+    <link rel="stylesheet" href="./styles/dist/global.css">
+    <link rel="stylesheet" href="./styles/dist/header.css">
+    <link rel="stylesheet" href="./styles/dist/main.css">
+    <link rel="stylesheet" href="./styles/dist/footer.css">
+</head>
+<body>
+    <div class="main--container">
+        <header id="header">
+            <div class="title--container">
+                <h1>The MM Times</h1>
+                <div class="search--container">
+                    <input type="text" placeholder="Digite sua pesquisa...">
+                    <button>Buscar</button>
+                </div>
+            </div>
+            <div class="menu--container">
+                <h2 onclick="changeTopic('breaking-news')">Últimas notícias</h2>
+                <h2 onclick="changeTopic('world')">Mundo</h2>
+                <h2 onclick="changeTopic('nation')">País</h2>
+                <h2 onclick="changeTopic('busines')">Negócios</h2>
+                <h2 onclick="changeTopic('technology')">Tecnologia</h2>
+                <h2 onclick="changeTopic('entertainment')">Entretenimento</h2>
+                <h2 onclick="changeTopic('sports')">Esportes</h2>
+                <h2 onclick="changeTopic('science')">Ciência</h2>
+                <h2 onclick="changeTopic('health')">Saúde</h2>
+            </div>
+        </header>
+        <main>
+            <div class="articles--container"></div>
+        </main>
+    </div>
+    <footer>
+        <small>
+            MM Times  -  Desenvolvido por 
+            <a href="https://github.com/jamelsalah" target="_blank">@jamelsalah</a>
+        </small>
+
+        <p onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Voltar para o topo</p>
+    </footer>
+
+    <script src="./utils/limitText.js"></script>
+    <script src="./components/articleCard.js"></script>
+    <script>
+        //const links = document.querySelectorAll('link[rel="stylesheet"]');
+
+        const newsContainer = document.querySelector(".articles--container");
+
+        async function changeTopic(newTopic) {            
+            while(newsContainer.firstChild) {
+                newsContainer.removeChild(newsContainer.firstChild)
+            }
+
+            main(newTopic);
+        }
+
+        async function apiRequest(url) {
+            var newData;
+            
+            await fetch(url)
+            .then(response => response.json())
+            .then(data => newData = data)
+            .catch(err => {
+                console.error(err);
+                alert('something went wrong :( try again later!');
+            });
+
+            return newData
+        }
+        
+        async function main(topic = "breaking-news") {
+            const apiKey = "";
+            const lang = "pt"
+            const url = `https://gnews.io/api/v4/top-headlines?lang=${lang}&token=${apiKey}&topic=${topic}`;
+
+            const { articles } = await apiRequest(url);
+            const parser = new DOMParser();
+
+            const newsElements = articles.map((article) => {
+                const data = {
+                    title: limitText(article.title, 30),
+                    description: limitText(article.description, 70),
+                    date: new Intl.DateTimeFormat("pt-BR").format(new Date(article.publishedAt)),
+                    url: article.url,
+                    image: article.image
+                }
+                
+                const element = articleCard(data);
+                const parsedHtml = parser.parseFromString(element, 'text/html');
+                newsContainer.appendChild(parsedHtml.body.firstChild);
+            });
+        }
+
+        main();
+    </script>
+</body>
+</html>
