@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/png">
     <title>The MM Times</title>
     <link rel="stylesheet" href="./styles/dist/global.css">
     <link rel="stylesheet" href="./styles/dist/header.css">
@@ -21,15 +22,15 @@
                 </div>
             </div>
             <div class="menu--container">
-                <h2 onclick="changeTopic('breaking-news')">Últimas notícias</h2>
-                <h2 onclick="changeTopic('world')">Mundo</h2>
-                <h2 onclick="changeTopic('nation')">País</h2>
-                <h2 onclick="changeTopic('busines')">Negócios</h2>
-                <h2 onclick="changeTopic('technology')">Tecnologia</h2>
-                <h2 onclick="changeTopic('entertainment')">Entretenimento</h2>
-                <h2 onclick="changeTopic('sports')">Esportes</h2>
-                <h2 onclick="changeTopic('science')">Ciência</h2>
-                <h2 onclick="changeTopic('health')">Saúde</h2>
+                <h2 onclick="changeTopic('breaking-news', 'Últimas notícias')">Últimas notícias</h2>
+                <h2 onclick="changeTopic('world', 'Mundo')">Mundo</h2>
+                <h2 onclick="changeTopic('nation', 'País')">País</h2>
+                <h2 onclick="changeTopic('busines', 'Negócios')">Negócios</h2>
+                <h2 onclick="changeTopic('technology', 'Tecnologia')">Tecnologia</h2>
+                <h2 onclick="changeTopic('entertainment', 'Entretenimento')">Entretenimento</h2>
+                <h2 onclick="changeTopic('sports', 'Esportes')">Esportes</h2>
+                <h2 onclick="changeTopic('science', 'Ciência')">Ciência</h2>
+                <h2 onclick="changeTopic('health', 'Saúde')">Saúde</h2>
             </div>
         </header>
         <main>
@@ -52,12 +53,12 @@
 
         const newsContainer = document.querySelector(".articles--container");
 
-        async function changeTopic(newTopic) {            
+        async function changeTopic(newTopic, category) {            
             while(newsContainer.firstChild) {
                 newsContainer.removeChild(newsContainer.firstChild)
             }
 
-            main(newTopic);
+            main(newTopic, category);
         }
 
         async function apiRequest(url) {
@@ -74,10 +75,10 @@
             return newData
         }
         
-        async function main(topic = "breaking-news") {
+        async function main(topic = "breaking-news", category = "Últimas notícias") {
             const apiKey = "c01d3d903b56d800703fcc6f6bcf2f57";
             const lang = "pt"
-            const url = `https://gnews.io/api/v4/top-headlines?lang=${lang}&token=${apiKey}&topic=${topic}`;
+            const url = `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?lang=${lang}&token=${apiKey}&topic=${topic}`;
 
             const { articles } = await apiRequest(url);
             const parser = new DOMParser();
@@ -88,7 +89,8 @@
                     description: limitText(article.description, 70),
                     date: new Intl.DateTimeFormat("pt-BR").format(new Date(article.publishedAt)),
                     url: article.url,
-                    image: article.image
+                    image: article.image,
+                    category: category
                 }
                 
                 const element = articleCard(data);
