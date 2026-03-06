@@ -78,7 +78,7 @@
         async function main(topic = "breaking-news", category = "Últimas notícias") {
             const apiKey = "c01d3d903b56d800703fcc6f6bcf2f57";
             const lang = "pt"
-            const url = `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?lang=${lang}&token=${apiKey}&topic=${topic}`;
+            const url = `https://gnews.io/api/v4/top-headlines?lang=${lang}&token=${apiKey}&topic=${topic}`;
 
             const { articles } = await apiRequest(url);
             const parser = new DOMParser();
